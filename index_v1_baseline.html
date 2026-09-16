@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UBS · E-Banking Vision 2027</title>
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN SYSTEM — Rot / Grau / Schwarz / Weiss
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Farben — streng Rot · Grau · Schwarz · Weiss */
+      --red:        #E00026;
+      --red-dark:   #B0001E;
+      --red-light:  #FFF0F2;
+      --red-mid:    #FFD6DB;
+
+      --black:      #0A0A0A;
+      --grey-900:   #1A1A1A;
+      --grey-800:   #2C2C2C;
+      --grey-700:   #3D3D3D;
+      --grey-600:   #555555;
+      --grey-500:   #6B6B6B;
+      --grey-400:   #909090;
+      --grey-300:   #BBBBBB;
+      --grey-200:   #D8D8D8;
+      --grey-100:   #EFEFEF;
+      --grey-50:    #F7F7F7;
+      --white:      #FFFFFF;
+
+      --radius:     12px;
+      --radius-sm:  8px;
+      --shadow:     0 1px 12px rgba(0,0,0,.07);
+      --shadow-md:  0 4px 24px rgba(0,0,0,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--grey-50);
+      color: var(--grey-900);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    /* ═══ HEADER ═══════════════════════════════════ */
+    header {
+      background: var(--grey-700);
+      height: 66px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+      position: sticky; top: 0; z-index: 200;
+      overflow: hidden;
+    }
+    /* Location-aware Hintergrundbild — dezent, 18% Deckkraft */
+    #headerBgImg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center 30%;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      z-index: 0;
+    }
+    #headerBgImg.loaded { opacity: 0.18; }
+    /* Alle Header-Kinder über dem Bild */
+    header > .logo,
+    header > nav,
+    header > .header-right { position: relative; z-index: 1; }
+    .logo { display: flex; align-items: center; gap: 13px; }
+    .logo-mark {
+      /* Rotes Quadrat mit den drei UBS-Schlüsseln */
+      width: 46px; height: 42px; border-radius: 7px;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-text-block { display: flex; flex-direction: column; gap: 0; }
+    .logo-ubs {
+      color: white; font-size: 17px; font-weight: 800;
+      letter-spacing: 2px; line-height: 1;
+    }
+    .logo-sub {
+      color: var(--grey-400); font-size: 10.5px; font-weight: 400;
+      letter-spacing: .2px; margin-top: 1px;
+    }
+
+    nav { display: flex; gap: 2px; }
+    nav a {
+      color: var(--grey-300); font-size: 13px; text-decoration: none;
+      padding: 6px 13px; border-radius: 6px; transition: all .15s;
+    }
+    nav a:hover { color: white; background: var(--grey-800); }
+    nav a.active { color: white; }
+
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .notif-btn {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: var(--grey-800); border: none; cursor: pointer;
+      color: var(--grey-300); font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; transition: background .15s;
+    }
+    .notif-btn:hover { background: var(--grey-700); }
+    .notif-badge {
+      position: absolute; top: 6px; right: 6px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red); border: 2px solid var(--grey-700);
+    }
+
+    .user-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--grey-800); border-radius: 20px;
+      padding: 4px 14px 4px 5px; cursor: pointer; transition: background .15s;
+    }
+    .user-pill:hover { background: var(--grey-700); }
+    .avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--red); color: white;
+      font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .user-pill span { color: white; font-size: 13px; font-weight: 500; }
+
+    /* ═══ ALERT BANNER ══════════════════════════════ */
+    .alert-banner {
+      background: var(--grey-700);
+      border-bottom: 1px solid var(--grey-600);
+      padding: 9px 32px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .alert-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red); flex-shrink: 0;
+      animation: blink 1.8s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .alert-text { font-size: 13px; color: var(--grey-300); flex: 1; }
+    .alert-text strong { color: white; }
+    .alert-cta {
+      font-size: 12px; font-weight: 600; color: white;
+      background: var(--red); border: none; border-radius: 16px;
+      padding: 4px 14px; cursor: pointer; white-space: nowrap; transition: background .15s;
+    }
+    .alert-cta:hover { background: var(--red-dark); }
+    .alert-x {
+      color: var(--grey-500); cursor: pointer; font-size: 16px;
+      background: none; border: none; padding: 0;
+    }
+    .alert-x:hover { color: white; }
+
+    /* ═══ LAYOUT ════════════════════════════════════ */
+    main {
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 0 80px;
+      display: grid;
+      grid-template-columns: 252px 1fr 300px;
+      gap: 0;
+    }
+    /* Linke Sidebar — Mind-Map */
+    .col-left {
+      background: white;
+      border-right: 1px solid var(--grey-200);
+      min-height: calc(100vh - 66px);
+      position: sticky; top: 66px;
+      height: calc(100vh - 66px);
+      overflow-y: auto;
+      display: flex; flex-direction: column;
+    }
+    /* Rechte Hauptspalte — Inhalt */
+    .col-right {
+      display: flex; flex-direction: column; gap: 24px;
+      padding: 32px 36px 80px;
+      background: var(--grey-50);
+    }
+
+    /* ═══ VERTIKALE MIND-MAP SIDEBAR ════════════════ */
+    .vmm-sidebar { display: flex; flex-direction: column; height: 100%; }
+
+    /* Nettovermögen-Block oben in der Sidebar */
+    .vmm-networth {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--grey-100);
+      background: var(--grey-50);
+    }
+    .vmm-nw-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .7px;
+      text-transform: uppercase; color: var(--grey-400); margin-bottom: 4px;
+    }
+    .vmm-nw-total {
+      font-size: 22px; font-weight: 700; letter-spacing: -.8px; color: var(--grey-900);
+    }
+    .vmm-nw-sub { font-size: 11px; color: var(--grey-400); margin-top: 1px; }
+    .vmm-nw-rows { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .vmm-nw-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11.5px; padding: 3px 0;
+      border-bottom: 1px solid var(--grey-100);
+    }
+    .vmm-nw-row:last-child { border-bottom: none; }
+    .vmm-nw-row .k { color: var(--grey-500); }
+    .vmm-nw-row .v { font-weight: 600; }
+    .vmm-nw-row .v.p { color: #2A7A2A; }
+    .vmm-nw-row .v.n { color: var(--red); }
+
+    /* Separator */
+    .vmm-sep {
+      font-size: 10px; font-weight: 700; letter-spacing: .7px;
+      text-transform: uppercase; color: var(--grey-400);
+      padding: 14px 18px 6px;
+    }
+
+    /* Root-Node */
+    .vmm-root {
+      margin: 0 14px 4px;
+      background: var(--red); color: white;
+      border-radius: 10px; padding: 9px 14px;
+      display: flex; align-items: center; gap: 9px;
+      font-size: 13px; font-weight: 700;
+    }
+    .vmm-root-keys { font-size: 14px; opacity: .9; }
+
+    /* Baum */
+    .vmm-tree {
+      flex: 1;
+      padding: 6px 0 20px;
+      position: relative;
+    }
+    /* Vertikaler Stamm links */
+    .vmm-trunk {
+      position: absolute; left: 26px; top: 0; bottom: 20px;
+      width: 2px; background: var(--grey-100); border-radius: 1px;
+    }
+
+    /* Division */
+    .vmm-div { position: relative; }
+    .vmm-div-row {
+      display: flex; align-items: center;
+      padding: 4px 14px 4px 14px;
+      cursor: pointer; gap: 0;
+      user-select: none;
+    }
+    /* Horizontaler Ast vom Stamm */
+    .vmm-branch {
+      width: 14px; height: 2px;
+      background: var(--grey-200); flex-shrink: 0;
+      margin-right: 8px; margin-left: 12px;
+      border-radius: 1px;
+      transition: background .2s;
+    }
+    .vmm-div.act .vmm-branch { background: var(--red); }
+
+    .vmm-pill {
+      flex: 1; padding: 7px 11px; border-radius: 10px;
+      background: var(--grey-50); border: 1px solid var(--grey-200);
+      font-size: 12px; font-weight: 500; color: var(--grey-700);
+      transition: all .15s; line-height: 1.2;
+    }
+    .vmm-div:hover .vmm-pill  { background: var(--grey-100); }
+    .vmm-div.act  .vmm-pill   {
+      background: var(--red-light); border-color: var(--red);
+      color: var(--red); font-weight: 600;
+    }
+
+    .vmm-chevron {
+      font-size: 13px; color: var(--grey-400);
+      margin-left: 6px; flex-shrink: 0;
+      transition: transform .22s, color .15s;
+    }
+    .vmm-div.act .vmm-chevron { transform: rotate(90deg); color: var(--red); }
+
+    /* Sub-Items (aufklappbar) */
+    .vmm-subs {
+      overflow: hidden; max-height: 0;
+      transition: max-height .3s ease, opacity .25s;
+      opacity: 0;
+      margin-left: 52px;
+      padding-left: 10px;
+      border-left: 2px solid var(--grey-100);
+    }
+    .vmm-div.act .vmm-subs { max-height: 160px; opacity: 1; }
+
+    .vmm-sub {
+      padding: 5px 10px; margin: 2px 0;
+      font-size: 11.5px; color: var(--grey-500);
+      border-radius: 7px; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: all .12s;
+    }
+    .vmm-sub::before {
+      content: ''; display: inline-block; flex-shrink: 0;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--grey-300);
+    }
+    .vmm-sub:hover {
+      background: var(--grey-50); color: var(--grey-900);
+    }
+    .vmm-sub:hover::before { background: var(--red); }
+
+    /* Fälligkeiten unten in Sidebar */
+    .vmm-agenda {
+      border-top: 1px solid var(--grey-100);
+      padding: 12px 14px;
+      margin-top: auto;
+    }
+    .vmm-agenda-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .7px;
+      text-transform: uppercase; color: var(--grey-400); margin-bottom: 8px;
+    }
+    .vmm-ag-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 0; border-bottom: 1px solid var(--grey-100);
+      font-size: 11.5px;
+    }
+    .vmm-ag-row:last-child { border-bottom: none; }
+    .vmm-ag-date {
+      width: 30px; text-align: center; flex-shrink: 0;
+      font-size: 10px; font-weight: 700; color: var(--grey-500);
+      background: var(--grey-50); border-radius: 5px; padding: 3px 0;
+    }
+    .vmm-ag-info { flex: 1; color: var(--grey-600); line-height: 1.3; }
+    .vmm-ag-info strong { display: block; font-size: 11px; color: var(--grey-800); }
+    .vmm-ag-amt { font-size: 11.5px; font-weight: 600; }
+
+    /* ═══ SECTION LABELS ════════════════════════════ */
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--grey-500);
+      margin-bottom: 10px;
+    }
+
+    /* ═══ GREETING ══════════════════════════════════ */
+    .greeting { padding-bottom: 4px; }
+    .greeting .meta {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--grey-400); margin-bottom: 8px;
+    }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #55A055; }
+    .greeting h1 {
+      font-size: 24px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 3px;
+    }
+    .greeting p { font-size: 13.5px; color: var(--grey-500); }
+
+    /* ═══ CARD BASE ══════════════════════════════════ */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--grey-200);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-head {
+      padding: 15px 18px 12px;
+      border-bottom: 1px solid var(--grey-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-head h3 { font-size: 14px; font-weight: 600; }
+    .card-link {
+      font-size: 12px; color: var(--red); text-decoration: none; font-weight: 500;
+    }
+    .card-link:hover { text-decoration: underline; }
+
+    /* ═══ AI CHAT ════════════════════════════════════ */
+
+    /* Chat-Card als primäres Element hervorheben */
+    .chat-card-primary {
+      background: var(--white);
+      border: 1.5px solid var(--red-mid);
+      border-top: 4px solid var(--red);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 32px rgba(224, 0, 38, .10), 0 1px 8px rgba(0,0,0,.06);
+      overflow: hidden;
+    }
+
+    .chat-header-row {
+      padding: 15px 18px 12px;
+      border-bottom: 1px solid var(--grey-100);
+      display: flex; align-items: center; gap: 11px;
+    }
+    .ai-badge {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+    }
+    .chat-header-info h3 { font-size: 14px; font-weight: 600; }
+    .chat-header-info p  { font-size: 12px; color: var(--grey-500); }
+
+    .chat-context-bar {
+      background: var(--grey-50);
+      border-bottom: 1px solid var(--grey-100);
+      padding: 8px 18px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .ctx-tag {
+      font-size: 11.5px; color: var(--grey-600);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .ctx-tag span { font-weight: 600; color: var(--grey-900); }
+
+    .chat-messages {
+      padding: 18px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .msg { display: flex; gap: 9px; }
+    .msg.user { flex-direction: row-reverse; }
+
+    .msg-av {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; margin-top: 2px;
+    }
+    .msg.ai  .msg-av { background: var(--grey-700); color: white; }
+    .msg.user .msg-av { background: var(--red-mid); color: var(--red); }
+
+    .msg-bubble {
+      max-width: 80%; padding: 10px 14px; line-height: 1.5;
+      font-size: 13.5px; border-radius: 12px;
+    }
+    .msg.ai  .msg-bubble { background: var(--grey-50); border-radius: 3px 12px 12px 12px; }
+    .msg.user .msg-bubble { background: var(--red); color: white; border-radius: 12px 3px 12px 12px; }
+
+    /* AI action cards */
+    .ai-results { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+    .ai-result-card {
+      background: white; border: 1px solid var(--grey-200);
+      border-radius: 9px; padding: 10px 13px;
+      display: flex; align-items: center; gap: 11px;
+      cursor: pointer; transition: all .15s;
+    }
+    .ai-result-card:hover { border-color: var(--red); transform: translateX(3px); }
+    .arc-icon {
+      width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+    }
+    .arc-body { flex: 1; }
+    .arc-body h4 { font-size: 13px; font-weight: 600; }
+    .arc-body p  { font-size: 11.5px; color: var(--grey-500); }
+    .arc-arrow { color: var(--grey-400); font-size: 16px; }
+
+    /* typing */
+    .typing { display: flex; gap: 4px; padding: 2px 0; align-items: center; }
+    .td {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--grey-400);
+      animation: tp .8s infinite;
+    }
+    .td:nth-child(2){ animation-delay:.2s }
+    .td:nth-child(3){ animation-delay:.4s }
+    @keyframes tp { 0%,100%{opacity:.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-3px)} }
+
+    /* chips */
+    .chips-row {
+      padding: 0 18px 14px;
+      display: flex; flex-wrap: wrap; gap: 7px;
+    }
+    .chip {
+      font-size: 12px; padding: 5px 12px;
+      border-radius: 16px; border: 1px solid var(--grey-200);
+      background: white; cursor: pointer; color: var(--grey-700);
+      transition: all .15s; white-space: nowrap;
+    }
+    .chip:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+
+    /* input */
+    .chat-input-row {
+      padding: 14px 16px 16px;
+      background: var(--red-light);
+      border-top: 1px solid var(--red-mid);
+      display: flex; gap: 10px; align-items: flex-end;
+    }
+    .chat-input-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .6px;
+      text-transform: uppercase; color: var(--red);
+      padding: 0 18px 6px;
+      background: var(--red-light);
+      display: block;
+    }
+    textarea.ci {
+      flex: 1; border: 1.5px solid var(--red-mid); border-radius: 10px;
+      padding: 11px 15px; font-size: 14px; font-family: inherit;
+      resize: none; outline: none; background: white;
+      min-height: 46px; max-height: 120px; color: var(--grey-900);
+      transition: all .2s;
+      box-shadow: 0 1px 6px rgba(224,0,38,.08);
+    }
+    textarea.ci:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(224,0,38,.12), 0 1px 6px rgba(224,0,38,.08);
+    }
+    textarea.ci::placeholder { color: var(--grey-400); }
+    .send {
+      width: 46px; height: 46px; border-radius: 10px;
+      background: var(--red); border: none; cursor: pointer; color: white;
+      font-size: 20px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all .15s;
+      box-shadow: 0 2px 10px rgba(224,0,38,.35);
+    }
+    .send:hover { background: var(--red-dark); transform: scale(1.06); box-shadow: 0 4px 16px rgba(224,0,38,.45); }
+
+    /* ═══ PORTFOLIO SPLIT ════════════════════════════ */
+    .portfolio-split {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+
+    .split-card {
+      border-radius: var(--radius); overflow: hidden;
+      border: 2px solid var(--grey-200);
+      background: white;
+    }
+    .split-card.ubs   { border-top: 3px solid var(--red); }
+    .split-card.third { border-top: 3px solid var(--grey-400); }
+
+    .split-header {
+      padding: 13px 16px 10px;
+      border-bottom: 1px solid var(--grey-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .split-label {
+      display: flex; align-items: center; gap: 7px;
+    }
+    .split-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: .5px;
+      padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .split-badge.ubs   { background: var(--red); color: white; }
+    .split-badge.third { background: var(--grey-700); color: white; }
+    .split-header h4   { font-size: 13px; font-weight: 600; }
+    .split-total       { font-size: 13px; font-weight: 700; padding: 12px 16px; border-bottom: 1px solid var(--grey-100); }
+    .split-total .lbl  { font-size: 11px; color: var(--grey-500); margin-bottom: 2px; }
+    .split-total .amt  { font-size: 21px; font-weight: 700; letter-spacing: -.5px; }
+    .split-total .sub  { font-size: 11.5px; color: var(--grey-400); margin-top: 2px; }
+
+    .split-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 16px; border-bottom: 1px solid var(--grey-100);
+      cursor: pointer; transition: background .12s;
+    }
+    .split-row:last-child { border-bottom: none; }
+    .split-row:hover { background: var(--grey-50); }
+    .sr-icon {
+      width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .sr-icon.ubs   { background: var(--red-light); }
+    .sr-icon.third { background: var(--grey-100); }
+    .sr-text h5  { font-size: 12.5px; font-weight: 600; }
+    .sr-text p   { font-size: 11px; color: var(--grey-500); }
+    .sr-right    { margin-left: auto; text-align: right; }
+    .sr-right .v { font-size: 13px; font-weight: 600; }
+    .sr-right .c { font-size: 11px; }
+    .pos { color: #2A7A2A; }
+    .neg { color: var(--red); }
+    .neu { color: var(--grey-500); }
+
+    .add-asset-btn {
+      width: 100%; padding: 10px 16px;
+      background: var(--grey-50); border: none; border-top: 1px solid var(--grey-100);
+      color: var(--grey-500); font-size: 12.5px; cursor: pointer;
+      display: flex; align-items: center; gap: 7px;
+      transition: background .15s; font-family: inherit;
+    }
+    .add-asset-btn:hover { background: var(--grey-100); color: var(--black); }
+
+    /* ═══ DOCUMENT UPLOAD PANEL ════════════════════ */
+    .doc-panel {
+      background: white; border: 1px solid var(--grey-200);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .doc-panel-head {
+      padding: 14px 18px 12px; border-bottom: 1px solid var(--grey-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .doc-panel-head h3 { font-size: 14px; font-weight: 600; }
+    .doc-panel-head p  { font-size: 12px; color: var(--grey-500); margin-top: 1px; }
+
+    .drop-zone {
+      margin: 16px 18px;
+      border: 2px dashed var(--grey-200);
+      border-radius: 10px; padding: 24px 20px;
+      text-align: center; cursor: pointer;
+      transition: all .2s; background: var(--grey-50);
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--red); background: var(--red-light);
+    }
+    .drop-icon { font-size: 28px; margin-bottom: 8px; }
+    .drop-title { font-size: 13.5px; font-weight: 600; margin-bottom: 4px; }
+    .drop-sub   { font-size: 12px; color: var(--grey-500); }
+    .drop-sub span { color: var(--red); font-weight: 500; cursor: pointer; }
+    .drop-formats {
+      margin-top: 10px; font-size: 11px; color: var(--grey-400);
+    }
+
+    /* Doc type buttons */
+    .doc-types {
+      padding: 0 18px 16px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    .doc-type-btn {
+      border: 1px solid var(--grey-200); border-radius: 8px;
+      padding: 10px 8px; text-align: center; cursor: pointer;
+      background: white; transition: all .15s; font-family: inherit;
+    }
+    .doc-type-btn:hover { border-color: var(--red); background: var(--red-light); }
+    .doc-type-btn .ico { font-size: 18px; margin-bottom: 4px; }
+    .doc-type-btn .lbl { font-size: 11px; color: var(--grey-600); line-height: 1.3; }
+
+    /* Uploaded docs list */
+    .doc-list { border-top: 1px solid var(--grey-100); }
+    .doc-list-head {
+      padding: 10px 18px 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: .6px;
+      text-transform: uppercase; color: var(--grey-400);
+      background: var(--grey-50); border-bottom: 1px solid var(--grey-100);
+    }
+    .doc-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 18px; border-bottom: 1px solid var(--grey-100);
+      transition: background .12s; cursor: pointer;
+    }
+    .doc-item:last-child { border-bottom: none; }
+    .doc-item:hover { background: var(--grey-50); }
+    .doc-file-icon {
+      width: 34px; height: 34px; border-radius: 7px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .doc-file-icon.pdf  { background: #FFF0F2; }
+    .doc-file-icon.img  { background: var(--grey-100); }
+    .doc-file-icon.xml  { background: #F0F7FF; }
+    .doc-info h5 { font-size: 13px; font-weight: 500; }
+    .doc-info p  { font-size: 11.5px; color: var(--grey-500); }
+    .doc-meta { margin-left: auto; text-align: right; }
+    .doc-status {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .doc-status.analysiert { background: #E6F4E6; color: #1A6B1A; }
+    .doc-status.pending    { background: var(--grey-100); color: var(--grey-600); }
+    .doc-status.error      { background: var(--red-light); color: var(--red); }
+    .doc-size { font-size: 11px; color: var(--grey-400); margin-top: 2px; }
+
+    /* progress bar */
+    .doc-progress { padding: 0 18px 14px; }
+    .progress-bar-wrap {
+      background: var(--grey-100); border-radius: 4px; height: 4px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--red); border-radius: 4px;
+      width: 0%; transition: width 1.5s ease;
+    }
+    .progress-label { font-size: 11.5px; color: var(--grey-500); margin-bottom: 5px; }
+
+    /* ═══ QUICK ACTIONS ══════════════════════════════ */
+    .quick-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .qa {
+      background: white; border: 1px solid var(--grey-200);
+      border-radius: var(--radius); padding: 14px 10px;
+      text-align: center; cursor: pointer; transition: all .15s;
+    }
+    .qa:hover { border-color: var(--red); transform: translateY(-2px); box-shadow: var(--shadow); }
+    .qa .qi { font-size: 20px; margin-bottom: 6px; }
+    .qa .ql { font-size: 12px; font-weight: 500; color: var(--grey-700); line-height: 1.3; }
+    .qa .qc { font-size: 11px; color: var(--grey-400); margin-top: 2px; }
+
+    /* ═══ RIGHT COLUMN CARDS ════════════════════════ */
+
+    /* Net wealth — jetzt als weisse Card mit rotem Akzent */
+    .net-worth {
+      background: white;
+      border: 1px solid var(--grey-200);
+      border-top: 3px solid var(--red);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+    }
+    .nw-label { font-size: 11px; font-weight: 700; letter-spacing: .7px;
+      text-transform: uppercase; color: var(--grey-500); margin-bottom: 8px; }
+    .nw-total {
+      font-size: 28px; font-weight: 700; letter-spacing: -1px;
+      color: var(--grey-900); margin-bottom: 3px;
+    }
+    .nw-sub { font-size: 12px; color: var(--grey-400); margin-bottom: 14px; }
+    .nw-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid var(--grey-600);
+      font-size: 13px;
+    }
+    .nw-row:last-child { border-bottom: none; }
+    .nw-row .nwr-l { color: var(--grey-600); display: flex; align-items: center; gap: 7px; }
+    .nw-row .nwr-l span { font-size: 14px; }
+    .nw-row .nwr-v { font-weight: 600; }
+    .nw-row .nwr-v.pos { color: #2A7A2A; }
+    .nw-row .nwr-v.neg { color: var(--red); }
+    .nw-divider {
+      border: none; border-top: 1px solid var(--grey-600);
+      margin: 10px 0;
+    }
+    .nw-net {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 8px;
+    }
+    .nw-net .lbl { font-size: 12px; color: var(--grey-400); font-weight: 600;
+      text-transform: uppercase; letter-spacing: .5px; }
+    .nw-net .val { font-size: 18px; font-weight: 700; color: #2A7A2A; }
+
+    /* Pensionierung */
+    .pension-card .pension-body { padding: 16px 18px; }
+    .pension-meter-wrap {
+      position: relative; height: 8px; background: var(--grey-100);
+      border-radius: 4px; overflow: hidden; margin: 14px 0 6px;
+    }
+    .pension-meter-fill {
+      height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg, var(--grey-300), var(--red));
+      width: 68%;
+    }
+    .pension-target-line {
+      position: absolute; right: 15%; top: -3px;
+      width: 2px; height: 14px; background: var(--grey-700);
+    }
+    .pension-labels {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--grey-500); margin-bottom: 14px;
+    }
+    .pension-row {
+      display: flex; justify-content: space-between; padding: 7px 0;
+      border-bottom: 1px solid var(--grey-100); font-size: 13px;
+    }
+    .pension-row:last-child { border-bottom: none; }
+    .pension-row .pr-l { color: var(--grey-600); }
+    .pension-row .pr-v { font-weight: 600; }
+    .pension-gap {
+      margin-top: 12px; background: var(--red-light);
+      border: 1px solid var(--red-mid); border-radius: 8px;
+      padding: 10px 13px; font-size: 12.5px;
+    }
+    .pension-gap strong { color: var(--red); }
+
+    /* AI Insights */
+    .insight-list { padding: 10px; display: flex; flex-direction: column; gap: 7px; }
+    .ins {
+      border-radius: 9px; padding: 11px 13px;
+      display: flex; gap: 10px; cursor: pointer; transition: opacity .15s;
+      border: 1px solid var(--grey-200);
+    }
+    .ins:hover { opacity: .85; }
+    .ins.warn { background: #FFFBF2; border-color: #E8C97A; }
+    .ins.alert{ background: var(--red-light); border-color: var(--red-mid); }
+    .ins.info { background: var(--grey-50); border-color: var(--grey-200); }
+    .ins-ico  { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+    .ins-body h4 { font-size: 12.5px; font-weight: 600; }
+    .ins-body p  { font-size: 11.5px; color: var(--grey-500); margin-top: 2px; }
+    .ins-body .act { font-size: 11.5px; font-weight: 600; color: var(--red); margin-top: 4px; }
+
+    /* Fälligkeiten */
+    .cal-row {
+      display: flex; gap: 12px; padding: 11px 18px;
+      border-bottom: 1px solid var(--grey-100); align-items: center;
+    }
+    .cal-row:last-child { border-bottom: none; }
+    .cal-box {
+      width: 38px; flex-shrink: 0; border-radius: 7px;
+      background: var(--grey-50); border: 1px solid var(--grey-100);
+      text-align: center; padding: 5px 0;
+    }
+    .cal-box .d { font-size: 16px; font-weight: 700; line-height: 1; }
+    .cal-box .m { font-size: 9px; text-transform: uppercase; color: var(--grey-500); font-weight: 600; }
+    .cal-info h5 { font-size: 13px; font-weight: 500; }
+    .cal-info p  { font-size: 11.5px; color: var(--grey-500); }
+    .cal-amt { margin-left: auto; font-size: 13.5px; font-weight: 600; }
+
+    /* ═══ UPLOAD MODAL ════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      z-index: 500; display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: 14px; width: 520px; max-width: 95vw;
+      box-shadow: 0 24px 80px rgba(0,0,0,.25);
+      animation: modalIn .2s ease both;
+    }
+    @keyframes modalIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+    .modal-head {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--grey-100);
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .modal-head h2 { font-size: 16px; font-weight: 700; }
+    .modal-head p  { font-size: 13px; color: var(--grey-500); margin-top: 2px; }
+    .modal-x { background: none; border: none; font-size: 20px; color: var(--grey-400);
+      cursor: pointer; padding: 0; }
+    .modal-x:hover { color: var(--black); }
+    .modal-body { padding: 20px 22px; }
+    .modal-drop {
+      border: 2px dashed var(--grey-200); border-radius: 10px; padding: 32px 20px;
+      text-align: center; background: var(--grey-50); cursor: pointer;
+      transition: all .2s; margin-bottom: 16px;
+    }
+    .modal-drop:hover { border-color: var(--red); background: var(--red-light); }
+    .modal-drop .mdi { font-size: 36px; margin-bottom: 10px; }
+    .modal-drop h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .modal-drop p  { font-size: 13px; color: var(--grey-500); }
+    .modal-drop p a { color: var(--red); cursor: pointer; }
+
+    .modal-types { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 18px; }
+    .mt-btn {
+      border: 1px solid var(--grey-200); border-radius: 9px; padding: 12px 8px;
+      text-align: center; cursor: pointer; background: white; transition: all .15s;
+      font-family: inherit;
+    }
+    .mt-btn:hover, .mt-btn.sel { border-color: var(--red); background: var(--red-light); }
+    .mt-btn .mti { font-size: 22px; margin-bottom: 5px; }
+    .mt-btn .mtl { font-size: 11.5px; color: var(--grey-600); font-weight: 500; line-height: 1.3; }
+
+    .modal-footer {
+      padding: 14px 22px;
+      border-top: 1px solid var(--grey-100);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+    .btn-ghost {
+      padding: 8px 18px; border: 1px solid var(--grey-200); border-radius: 8px;
+      background: none; cursor: pointer; font-size: 13px; font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-ghost:hover { background: var(--grey-50); }
+    .btn-primary {
+      padding: 8px 20px; background: var(--red); color: white;
+      border: none; border-radius: 8px; cursor: pointer;
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-primary:hover { background: var(--red-dark); }
+
+    /* ═══ MIND-MAP ════════════════════════════════ */
+    .mm-card {
+      background: white; border: 1px solid var(--grey-200);
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    }
+    .mm-head {
+      padding: 14px 18px 11px; border-bottom: 1px solid var(--grey-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mm-head h3 { font-size: 14px; font-weight: 600; }
+    .mm-head p  { font-size: 11.5px; color: var(--grey-500); margin-top: 1px; }
+    .mm-body { padding: 10px 6px 6px; }
+    .mm-svg  { width: 100%; display: block; cursor: default; }
+
+    /* SVG node styles */
+    .mm-root-rect { fill: var(--red); }
+    .mm-root-text { fill: white; font-size: 12px; font-weight: 800;
+      font-family: -apple-system, sans-serif; letter-spacing: 1.5px; }
+
+    .mm-connector { fill: none; stroke: var(--grey-300); stroke-width: 1.2;
+      transition: stroke .25s; }
+    .mm-connector.act { stroke: var(--red); stroke-width: 1.6; }
+
+    .mm-div-rect { fill: var(--grey-50); stroke: var(--grey-200); stroke-width: 1;
+      transition: all .2s; cursor: pointer; rx: 14; }
+    .mm-div-rect:hover { fill: var(--grey-100); }
+    .mm-div-rect.act  { fill: var(--red-light); stroke: var(--red); stroke-width: 1.5; }
+
+    .mm-div-text { fill: var(--grey-700); font-size: 11px; font-weight: 500;
+      font-family: -apple-system, sans-serif; pointer-events: none;
+      dominant-baseline: middle; text-anchor: middle; transition: fill .2s; }
+    .mm-div-text.act { fill: var(--red); font-weight: 700; }
+
+    .mm-sub-conn { fill: none; stroke: var(--grey-200); stroke-width: 1; }
+    .mm-sub-g { opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .mm-sub-g.vis { opacity: 1; pointer-events: all; }
+
+    .mm-sub-rect { fill: white; stroke: var(--grey-200); stroke-width: 1;
+      transition: all .15s; cursor: pointer; }
+    .mm-sub-rect:hover { stroke: var(--red); fill: var(--red-light); }
+
+    .mm-sub-text { fill: var(--grey-600); font-size: 10px;
+      font-family: -apple-system, sans-serif; pointer-events: none;
+      dominant-baseline: middle; text-anchor: middle; }
+
+    /* Location badge im Header */
+    .location-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 12px; padding: 3px 10px;
+      font-size: 11px; color: rgba(255,255,255,.8);
+      margin-left: 10px;
+    }
+
+    /* ═══ FADE-IN ═════════════════════════════════ */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .card, .doc-panel, .portfolio-split, .quick-grid, .net-worth {
+      animation: fadeUp .3s ease both;
+    }
+
+    /* ═══ RESPONSIVE ══════════════════════════════ */
+    /* Rechte Insights-Spalte */
+    .col-insights {
+      background: var(--grey-50);
+      border-left: 1px solid var(--grey-200);
+      padding: 28px 18px 80px;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+
+    @media(max-width:1280px){
+      main { grid-template-columns: 252px 1fr 280px; }
+    }
+    @media(max-width:1080px){
+      main { grid-template-columns: 220px 1fr; }
+      .col-insights { display: none; }
+    }
+    @media(max-width:860px){
+      main { grid-template-columns: 1fr; }
+      .col-left { display: none; }
+      .col-right { padding: 20px 18px 60px; }
+      .portfolio-split { grid-template-columns: 1fr; }
+      .quick-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media(max-width:600px){
+      header { padding: 0 16px; }
+      nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════════════════════════ -->
+<header>
+  <!-- Dynamisches Hintergrundbild (Timezone-abhängig) -->
+  <div id="headerBgImg"></div>
+  <div class="logo">
+    <!-- Rotes Logo-Quadrat mit drei UBS-Schlüsseln (SVG) -->
+    <div class="logo-mark">
+      <!--
+        UBS Drei-Schlüssel: klassischer Skeleton-Key
+        Bogen (Ring) oben · Schaft vertikal · Bart (Zähne) unten rechts
+        Drei Schlüssel nebeneinander, identisch, gleichmässig verteilt
+      -->
+      <svg width="36" height="34" viewBox="0 0 36 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- ── SCHLÜSSEL 1 (x-Mitte = 6) ── -->
+        <!-- Bogen: ausgefüllter Kreis + roter Innenkreis ergibt Ring -->
+        <circle cx="6"  cy="5.5" r="4"   fill="white"/>
+        <circle cx="6"  cy="5.5" r="1.9" fill="#E00026"/>
+        <!-- Schaft -->
+        <rect x="5.1" y="9"  width="1.8" height="18" rx="0.4" fill="white"/>
+        <!-- Bart oben (längerer Zahn) -->
+        <rect x="6.9" y="21" width="3"   height="1.6" rx="0.3" fill="white"/>
+        <!-- Bart unten (kürzerer Zahn) -->
+        <rect x="6.9" y="24" width="2"   height="1.6" rx="0.3" fill="white"/>
+
+        <!-- ── SCHLÜSSEL 2 (x-Mitte = 18) ── -->
+        <circle cx="18" cy="5.5" r="4"   fill="white"/>
+        <circle cx="18" cy="5.5" r="1.9" fill="#E00026"/>
+        <rect x="17.1" y="9"  width="1.8" height="18" rx="0.4" fill="white"/>
+        <rect x="18.9" y="21" width="3"   height="1.6" rx="0.3" fill="white"/>
+        <rect x="18.9" y="24" width="2"   height="1.6" rx="0.3" fill="white"/>
+
+        <!-- ── SCHLÜSSEL 3 (x-Mitte = 30) ── -->
+        <circle cx="30" cy="5.5" r="4"   fill="white"/>
+        <circle cx="30" cy="5.5" r="1.9" fill="#E00026"/>
+        <rect x="29.1" y="9"  width="1.8" height="18" rx="0.4" fill="white"/>
+        <rect x="30.9" y="21" width="3"   height="1.6" rx="0.3" fill="white"/>
+        <rect x="30.9" y="24" width="2"   height="1.6" rx="0.3" fill="white"/>
+
+      </svg>
+    </div>
+    <!-- UBS Schriftzug + Kontext -->
+    <div class="logo-text-block">
+      <span class="logo-ubs">UBS</span>
+      <span class="logo-sub">E-Banking · Vision 2027 · Prototyp</span>
+      <span class="location-badge" id="locationBadge">📍 Zürich</span>
+    </div>
+  </div>
+  <nav>
+    <a href="#" class="active">Übersicht</a>
+    <a href="#">Zahlungen</a>
+    <a href="#">Anlagen</a>
+    <a href="#">Vorsorge</a>
+    <a href="#">Steuern</a>
+  </nav>
+  <div class="header-right">
+    <button class="notif-btn" title="Benachrichtigungen">
+      🔔<div class="notif-badge"></div>
+    </button>
+    <div class="user-pill">
+      <div class="avatar">MS</div>
+      <span>M. Stoeckli</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ ALERT BANNER ════════════════════════ -->
+<div class="alert-banner" id="alertBanner">
+  <div class="alert-dot"></div>
+  <div class="alert-text">
+    <strong>Markt-Alert:</strong> USD/CHF –2.4% heute — Ihre USD-Position (CHF 48 200) ist betroffen. KI-Strategie verfügbar.
+  </div>
+  <button class="alert-cta" onclick="triggerInvestChat()">Strategie anzeigen →</button>
+  <button class="alert-x" onclick="this.closest('.alert-banner').style.display='none'">✕</button>
+</div>
+
+<!-- ══════════ MAIN ═════════════════════════════════ -->
+<main>
+
+<!-- ════ LEFT COLUMN — MIND-MAP SIDEBAR ════ -->
+<div class="col-left">
+<div class="vmm-sidebar">
+
+  <!-- Nettovermögen kompakt -->
+  <div class="vmm-networth">
+    <div class="vmm-nw-label">Nettovermögen</div>
+    <div class="vmm-nw-total">CHF 850 140</div>
+    <div class="vmm-nw-sub">UBS + Drittbanken + Vorsorge</div>
+    <div class="vmm-nw-rows">
+      <div class="vmm-nw-row"><span class="k">🏦 UBS</span><span class="v p">+285 140</span></div>
+      <div class="vmm-nw-row"><span class="k">🏛️ Drittbanken</span><span class="v p">+98 400</span></div>
+      <div class="vmm-nw-row"><span class="k">🏢 Vorsorge</span><span class="v p">+374 000</span></div>
+      <div class="vmm-nw-row"><span class="k">🏠 Hypothek</span><span class="v n">−680 000</span></div>
+    </div>
+  </div>
+
+  <!-- Navigation Label -->
+  <div class="vmm-sep">Navigation</div>
+
+  <!-- UBS Root -->
+  <div class="vmm-root">
+    <span class="vmm-root-keys">🔑🔑🔑</span>
+    <span>UBS Divisionen</span>
+  </div>
+
+  <!-- Vertikaler Baum -->
+  <div class="vmm-tree">
+    <div class="vmm-trunk"></div>
+
+    <!-- D1 Private Clients -->
+    <div class="vmm-div" id="vd1">
+      <div class="vmm-div-row" onclick="vmmClick('vd1')">
+        <div class="vmm-branch"></div>
+        <div class="vmm-pill">Private Clients</div>
+        <span class="vmm-chevron">›</span>
+      </div>
+      <div class="vmm-subs">
+        <div class="vmm-sub">Daily Banking</div>
+        <div class="vmm-sub">Hypotheken</div>
+        <div class="vmm-sub">Säule 3a / 3b</div>
+        <div class="vmm-sub">KeyClub &amp; Karten</div>
+      </div>
+    </div>
+
+    <!-- D2 Wealth Management -->
+    <div class="vmm-div" id="vd2">
+      <div class="vmm-div-row" onclick="vmmClick('vd2')">
+        <div class="vmm-branch"></div>
+        <div class="vmm-pill">Wealth Management</div>
+        <span class="vmm-chevron">›</span>
+      </div>
+      <div class="vmm-subs">
+        <div class="vmm-sub">Portfolio Management</div>
+        <div class="vmm-sub">Advisory</div>
+        <div class="vmm-sub">Family Office</div>
+        <div class="vmm-sub">ESG / Nachhaltigkeit</div>
+      </div>
+    </div>
+
+    <!-- D3 Corporate Clients -->
+    <div class="vmm-div" id="vd3">
+      <div class="vmm-div-row" onclick="vmmClick('vd3')">
+        <div class="vmm-branch"></div>
+        <div class="vmm-pill">Corporate Clients</div>
+        <span class="vmm-chevron">›</span>
+      </div>
+      <div class="vmm-subs">
+        <div class="vmm-sub">Trade Finance</div>
+        <div class="vmm-sub">FX &amp; Treasury</div>
+        <div class="vmm-sub">Kredit &amp; Finanzierung</div>
+        <div class="vmm-sub">Cash Management</div>
+      </div>
+    </div>
+
+    <!-- D4 Asset Management -->
+    <div class="vmm-div" id="vd4">
+      <div class="vmm-div-row" onclick="vmmClick('vd4')">
+        <div class="vmm-branch"></div>
+        <div class="vmm-pill">Asset Management</div>
+        <span class="vmm-chevron">›</span>
+      </div>
+      <div class="vmm-subs">
+        <div class="vmm-sub">Fonds &amp; ETFs</div>
+        <div class="vmm-sub">Alternative Anlagen</div>
+        <div class="vmm-sub">Quantitative Strategien</div>
+        <div class="vmm-sub">Nachhaltige Anlagen</div>
+      </div>
+    </div>
+
+    <!-- D5 Investment Bank -->
+    <div class="vmm-div" id="vd5">
+      <div class="vmm-div-row" onclick="vmmClick('vd5')">
+        <div class="vmm-branch"></div>
+        <div class="vmm-pill">Investment Bank</div>
+        <span class="vmm-chevron">›</span>
+      </div>
+      <div class="vmm-subs">
+        <div class="vmm-sub">Equities</div>
+        <div class="vmm-sub">Fixed Income</div>
+        <div class="vmm-sub">M&amp;A Advisory</div>
+        <div class="vmm-sub">Research &amp; Strategy</div>
+      </div>
+    </div>
+
+  </div><!-- /vmm-tree -->
+
+  <!-- Fälligkeiten unten -->
+  <div class="vmm-agenda">
+    <div class="vmm-agenda-label">Nächste Fälligkeiten</div>
+    <div class="vmm-ag-row">
+      <div class="vmm-ag-date">30<br>Jun</div>
+      <div class="vmm-ag-info"><strong>Steuerrate ZH</strong>Autom. aktiv</div>
+      <div class="vmm-ag-amt neg">−3 200</div>
+    </div>
+    <div class="vmm-ag-row">
+      <div class="vmm-ag-date">01<br>Jul</div>
+      <div class="vmm-ag-info"><strong>Hypothekarzins</strong>SARON vtlj.</div>
+      <div class="vmm-ag-amt neg">−1 840</div>
+    </div>
+    <div class="vmm-ag-row">
+      <div class="vmm-ag-date">05<br>Jul</div>
+      <div class="vmm-ag-info"><strong>Mietzins</strong>Liegenschaft Win.</div>
+      <div class="vmm-ag-amt pos">+2 400</div>
+    </div>
+  </div>
+
+</div><!-- /vmm-sidebar -->
+</div><!-- /col-left -->
+
+<!-- ════ RIGHT COLUMN — HAUPTINHALT ════ -->
+<div class="col-right">
+
+  <!-- Greeting -->
+  <div class="greeting">
+    <div class="meta"><div class="live-dot"></div> Echtzeit-Daten · 25.06.2026, 09:14 Uhr</div>
+    <h1>Guten Morgen, Marco 👋</h1>
+    <p>Ihr Gesamtvermögen liegt heute bei <strong>CHF 850 140</strong> — inkl. Drittbank-Positionen.</p>
+  </div>
+
+  <!-- ── AI CHAT ────────────────────────────────── -->
+  <div class="chat-card-primary">
+    <div class="chat-header-row">
+      <div class="ai-badge">🤖</div>
+      <div class="chat-header-info">
+        <h3>UBS Finance Assistant</h3>
+        <p>Ganzheitliche Analyse · UBS + Drittbanken + Vorsorge + Steuern</p>
+      </div>
+    </div>
+    <div class="chat-context-bar">
+      <div class="ctx-tag">Risiko <span>Ausgewogen</span></div>
+      <div class="ctx-tag">Steuersatz <span>32%</span></div>
+      <div class="ctx-tag">Pension in <span>18 J.</span></div>
+      <div class="ctx-tag">Dokumente <span>4 analysiert</span></div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg ai">
+        <div class="msg-av">AI</div>
+        <div class="msg-bubble">
+          Guten Morgen! Ich sehe Ihre vollständige Vermögenssituation — UBS und Drittbanken.<br><br>
+          Heute dringend: Ihre USD-Position verliert –2.4%. Ausserdem läuft Ihre SARON-Hypothek 2027 aus und Ihre Steuerrate von CHF 3 200 ist in 5 Tagen fällig. Womit soll ich anfangen?
+        </div>
+      </div>
+    </div>
+    <div id="typingRow" style="padding:0 18px 10px;display:none">
+      <div class="msg ai">
+        <div class="msg-av">AI</div>
+        <div class="msg-bubble"><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>
+      </div>
+    </div>
+    <div id="aiResult" style="padding:0 18px 16px;display:none"></div>
+    <div class="chips-row" id="chipsRow">
+      <span class="chip" onclick="demoChat(this,'invest')">💬 Wie kann ich besser investieren?</span>
+      <span class="chip" onclick="demoChat(this,'pension')">🏢 Wie sieht meine Pensionierung aus?</span>
+      <span class="chip" onclick="demoChat(this,'tax')">🧾 Steuern optimieren</span>
+      <span class="chip" onclick="demoChat(this,'usd')">⚠️ USD-Risiko erklären</span>
+    </div>
+    <span class="chat-input-label">Ihre Frage an den UBS Finance Assistant</span>
+    <div class="chat-input-row">
+      <textarea class="ci" id="chatInput" rows="1"
+        placeholder="z. B. «Wie kann ich CHF 20 000 steueroptimiert anlegen?»"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+      <button class="send" onclick="sendMsg()" title="Frage senden">↑</button>
+    </div>
+  </div>
+
+  <!-- ── GESAMTPORTFOLIO SPLIT ───────────────────── -->
+  <div>
+    <div class="section-label">Gesamtportfolio — UBS vs. Drittbanken</div>
+    <div class="portfolio-split">
+
+      <!-- UBS SEITE -->
+      <div class="split-card ubs">
+        <div class="split-header">
+          <div class="split-label">
+            <div class="split-badge ubs">UBS</div>
+            <h4>Produkte & Vermögen</h4>
+          </div>
+          <a class="card-link" href="#">Details</a>
+        </div>
+        <div class="split-total">
+          <div class="lbl">Total bei UBS (netto)</div>
+          <div class="amt">CHF 535 140</div>
+          <div class="sub">▲ +CHF 2 840 heute · +0.54%</div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon ubs">🏦</div>
+          <div class="sr-text"><h5>Konten & Liquidität</h5><p>Privat-, Sparkonto, Fremdwährung</p></div>
+          <div class="sr-right"><div class="v">CHF 38 420</div><div class="c neu">Aktuell</div></div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon ubs">📈</div>
+          <div class="sr-text"><h5>Depot / Anlagen</h5><p>SMI-ETF, Nestlé, Novartis, USD</p></div>
+          <div class="sr-right"><div class="v">CHF 184 720</div><div class="c pos">+1.2%</div></div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon ubs">🔒</div>
+          <div class="sr-text"><h5>Säule 3a UBS</h5><p>UBS Vitainvest, angelegt</p></div>
+          <div class="sr-right"><div class="v">CHF 62 000</div><div class="c pos">+0.3%</div></div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon ubs">🏠</div>
+          <div class="sr-text"><h5>Hypothek</h5><p>SARON, Fälligkeit März 2027</p></div>
+          <div class="sr-right"><div class="v neg">−CHF 680 000</div><div class="c neg">Erneuerung</div></div>
+        </div>
+        <button class="add-asset-btn" onclick="openModal('ubs')">＋ UBS-Position manuell erfassen</button>
+      </div>
+
+      <!-- DRITTE SEITE -->
+      <div class="split-card third">
+        <div class="split-header">
+          <div class="split-label">
+            <div class="split-badge third">DRITTE</div>
+            <h4>Externe Vermögenswerte</h4>
+          </div>
+          <a class="card-link" href="#" onclick="openModal('third');return false;">+ Hinzufügen</a>
+        </div>
+        <div class="split-total">
+          <div class="lbl">Total Drittbanken & Versicherungen</div>
+          <div class="amt">CHF 315 000</div>
+          <div class="sub" style="color:var(--grey-400)">Manuell erfasst · zuletzt aktualisiert 20.06.2026</div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon third">🏛️</div>
+          <div class="sr-text"><h5>ZKB — Konto & Depot</h5><p>Hochgeladen: Depotauszug PDF</p></div>
+          <div class="sr-right"><div class="v">CHF 98 400</div><div class="c neu">Manuell</div></div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon third">🏢</div>
+          <div class="sr-text"><h5>Pensionskasse (PKG)</h5><p>Ausweis 2025 hochgeladen</p></div>
+          <div class="sr-right"><div class="v">CHF 312 000</div><div class="c neu">Ausweis</div></div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon third">🛡️</div>
+          <div class="sr-text"><h5>Lebensversicherung Swiss Life</h5><p>Police 2024 hochgeladen</p></div>
+          <div class="sr-right"><div class="v">CHF 85 000</div><div class="c neu">Rückkaufswert</div></div>
+        </div>
+        <div class="split-row">
+          <div class="sr-icon third">📋</div>
+          <div class="sr-text"><h5>Steuerauszug 2025</h5><p>Kanton ZH — analysiert</p></div>
+          <div class="sr-right"><div class="v neg">−CHF 180 400</div><div class="c neg">Steuerpflicht</div></div>
+        </div>
+        <button class="add-asset-btn" onclick="openModal('third')">＋ Dokument / Position hinzufügen</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── DOKUMENT-UPLOAD PANEL ───────────────────── -->
+  <div class="doc-panel">
+    <div class="doc-panel-head">
+      <div>
+        <h3>📂 Dokumente & Analyse</h3>
+        <p>Laden Sie Steuerdokumente, PK-Ausweise, Policen oder Drittbank-Auszüge hoch — die KI extrahiert und integriert alles automatisch.</p>
+      </div>
+      <button class="btn-primary" onclick="openModal('upload')" style="white-space:nowrap;flex-shrink:0">+ Dokument laden</button>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="dropZone"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="handleDrop(event)"
+      onclick="openModal('upload')">
+      <div class="drop-icon">📎</div>
+      <div class="drop-title">Dokument hier ablegen oder <span>durchsuchen</span></div>
+      <div class="drop-sub">Steuerauszug · PK-Ausweis · Depotauszug · Police · Vermögensübersicht</div>
+      <div class="drop-formats">PDF · PNG · JPG · XML (ISO 20022) · XLSX · max. 50 MB</div>
+    </div>
+
+    <!-- Doc type quick buttons -->
+    <div class="doc-types">
+      <button class="doc-type-btn" onclick="openModal('steuer')">
+        <div class="ico">🧾</div><div class="lbl">Steuer&shy;auszug</div>
+      </button>
+      <button class="doc-type-btn" onclick="openModal('pk')">
+        <div class="ico">🏢</div><div class="lbl">PK-Ausweis</div>
+      </button>
+      <button class="doc-type-btn" onclick="openModal('depot')">
+        <div class="ico">📊</div><div class="lbl">Depot&shy;auszug</div>
+      </button>
+      <button class="doc-type-btn" onclick="openModal('police')">
+        <div class="ico">🛡️</div><div class="lbl">Versicherungs&shy;police</div>
+      </button>
+      <button class="doc-type-btn" onclick="openModal('vermoegen')">
+        <div class="ico">🏦</div><div class="lbl">Vermögens&shy;übersicht Dritte</div>
+      </button>
+      <button class="doc-type-btn" onclick="openModal('sonstig')">
+        <div class="ico">📁</div><div class="lbl">Sonstiges Dokument</div>
+      </button>
+    </div>
+
+    <!-- Upload progress (demo) -->
+    <div class="doc-progress" id="progressWrap" style="display:none">
+      <div class="progress-label" id="progressLabel">KI analysiert «PK-Ausweis_2026.pdf»…</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- Uploaded docs list -->
+    <div class="doc-list">
+      <div class="doc-list-head">Analysierte Dokumente</div>
+      <div class="doc-item">
+        <div class="doc-file-icon pdf">📄</div>
+        <div class="doc-info">
+          <h5>Steuerauszug_ZH_2025.pdf</h5>
+          <p>Kanton Zürich · Steuerpflicht CHF 180 400 · Einzahlungen 3a erkannt</p>
+        </div>
+        <div class="doc-meta">
+          <div class="doc-status analysiert">Analysiert</div>
+          <div class="doc-size">1.2 MB · 18.06.2026</div>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-file-icon pdf">📄</div>
+        <div class="doc-info">
+          <h5>PKG_Ausweis_2025.pdf</h5>
+          <p>Pensionskasse Gemeinschaft · Freizügigkeitsguthaben CHF 312 000</p>
+        </div>
+        <div class="doc-meta">
+          <div class="doc-status analysiert">Analysiert</div>
+          <div class="doc-size">0.8 MB · 15.06.2026</div>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-file-icon pdf">📄</div>
+        <div class="doc-info">
+          <h5>SwissLife_Police_2024.pdf</h5>
+          <p>Lebensversicherung · Rückkaufswert CHF 85 000 · Fälligkeit 2038</p>
+        </div>
+        <div class="doc-meta">
+          <div class="doc-status analysiert">Analysiert</div>
+          <div class="doc-size">2.1 MB · 10.06.2026</div>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-file-icon pdf">📄</div>
+        <div class="doc-info">
+          <h5>ZKB_Depotauszug_Mai2026.pdf</h5>
+          <p>Zürcher Kantonalbank · Depot CHF 98 400 · 8 Positionen</p>
+        </div>
+        <div class="doc-meta">
+          <div class="doc-status analysiert">Analysiert</div>
+          <div class="doc-size">0.6 MB · 05.06.2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── QUICK ACTIONS ───────────────────────────── -->
+  <div>
+    <div class="section-label">Schnellzugriff</div>
+    <div class="quick-grid">
+      <div class="qa"><div class="qi">💳</div><div class="ql">Zahlung erfassen</div><div class="qc">2 offen</div></div>
+      <div class="qa"><div class="qi">📂</div><div class="ql">Dokument laden</div><div class="qc" onclick="openModal('upload')">+ Hinzufügen</div></div>
+      <div class="qa"><div class="qi">📊</div><div class="ql">Anlage-Report Q2</div><div class="qc">2026</div></div>
+      <div class="qa"><div class="qi">🏠</div><div class="ql">Hypothek prüfen</div><div class="qc">Fällig 2027</div></div>
+    </div>
+  </div>
+
+</div><!-- /col-right -->
+
+<!-- ════ RECHTE INSIGHTS-SPALTE ════ -->
+<div class="col-insights">
+
+  <!-- Pensionierungssituation -->
+  <div class="card pension-card">
+    <div class="card-head">
+      <h3>🏢 Pensionierung</h3>
+      <a class="card-link" href="#">Simulation →</a>
+    </div>
+    <div class="pension-body">
+      <div style="font-size:12px;color:var(--grey-500);margin-bottom:6px">
+        Vorsorgedeckung · Ziel CHF 1.8M · in 18 Jahren
+      </div>
+      <div class="pension-meter-wrap">
+        <div class="pension-meter-fill"></div>
+        <div class="pension-target-line"></div>
+      </div>
+      <div class="pension-labels">
+        <span>Heute: CHF 459 000</span>
+        <span style="font-weight:600">Ziel: CHF 1.8M</span>
+      </div>
+      <div class="pension-row">
+        <div class="pr-l">AHV (erwartet)</div>
+        <div class="pr-v">CHF 2 450 / Mt.</div>
+      </div>
+      <div class="pension-row">
+        <div class="pr-l">PK-Rente (Proj.)</div>
+        <div class="pr-v">CHF 3 100 / Mt.</div>
+      </div>
+      <div class="pension-row">
+        <div class="pr-l">3a Kapital (Proj.)</div>
+        <div class="pr-v">CHF 198 000</div>
+      </div>
+      <div class="pension-row">
+        <div class="pr-l">Zieleinkommen</div>
+        <div class="pr-v">CHF 9 500 / Mt.</div>
+      </div>
+      <div class="pension-gap">
+        <strong>⚠️ Vorsorgelücke CHF 3 950 / Mt.</strong><br>
+        PK-Einkauf + 3a-Erhöhung + Depot kann Lücke schliessen.
+        <br><a class="card-link" href="#" style="font-size:12px">→ Massnahmen anzeigen</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- KI-Empfehlungen -->
+  <div class="card">
+    <div class="card-head">
+      <h3>🧠 KI-Empfehlungen</h3>
+      <a class="card-link" href="#">Alle →</a>
+    </div>
+    <div class="insight-list">
+      <div class="ins alert">
+        <div class="ins-ico">⚠️</div>
+        <div class="ins-body">
+          <h4>USD-Risiko kritisch</h4>
+          <p>CHF 48 200 ungesichert · –2.4%</p>
+          <div class="act">→ Forward-Hedging</div>
+        </div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-ico">💡</div>
+        <div class="ins-body">
+          <h4>3a einzahlen — CHF 2 258</h4>
+          <p>Maximalbetrag noch offen</p>
+          <div class="act">→ Jetzt einzahlen</div>
+        </div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-ico">🏢</div>
+        <div class="ins-body">
+          <h4>PK-Einkauf CHF 42 000</h4>
+          <p>Steuervorteil CHF 13 440</p>
+          <div class="act">→ Simulation starten</div>
+        </div>
+      </div>
+      <div class="ins info">
+        <div class="ins-ico">🏠</div>
+        <div class="ins-body">
+          <h4>Hypothek: Fix-Rate prüfen</h4>
+          <p>SARON März 2027 — 1.82% heute</p>
+          <div class="act">→ Offerte einholen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /col-insights -->
+</main>
+
+<footer style="text-align:center;padding:18px;font-size:11.5px;color:var(--grey-400);
+  border-top:1px solid var(--grey-200);background:white;">
+  UBS E-Banking Vision 2027 · Konzept-Prototyp · Alle Daten sind fiktiv · Nicht produktiv
+</footer>
+
+<!-- ══════════ UPLOAD MODAL ═════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2 id="modalTitle">Dokument hochladen</h2>
+        <p id="modalSubtitle">KI extrahiert und integriert Daten automatisch in Ihr Gesamtportfolio</p>
+      </div>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-drop" onclick="simulateUpload()">
+        <div class="mdi">📎</div>
+        <h4>Datei hierher ziehen oder klicken</h4>
+        <p>PDF · PNG · JPG · XML · XLSX — max. 50 MB<br><a>Datei auswählen</a></p>
+      </div>
+      <div style="font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+        color:var(--grey-500);margin-bottom:10px;">Dokumenttyp wählen</div>
+      <div class="modal-types">
+        <button class="mt-btn sel" id="mt0" onclick="selType(0)">
+          <div class="mti">🧾</div><div class="mtl">Steuerauszug</div>
+        </button>
+        <button class="mt-btn" id="mt1" onclick="selType(1)">
+          <div class="mti">🏢</div><div class="mtl">PK-Ausweis</div>
+        </button>
+        <button class="mt-btn" id="mt2" onclick="selType(2)">
+          <div class="mti">📊</div><div class="mtl">Depotauszug</div>
+        </button>
+        <button class="mt-btn" id="mt3" onclick="selType(3)">
+          <div class="mti">🛡️</div><div class="mtl">Versicherungs&shy;police</div>
+        </button>
+        <button class="mt-btn" id="mt4" onclick="selType(4)">
+          <div class="mti">🏦</div><div class="mtl">Vermögens&shy;übersicht</div>
+        </button>
+        <button class="mt-btn" id="mt5" onclick="selType(5)">
+          <div class="mti">📁</div><div class="mtl">Sonstiges</div>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal()">Abbrechen</button>
+      <button class="btn-primary" onclick="simulateUpload()">Dokument analysieren →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ JAVASCRIPT ══════════════════════════ -->
+<script>
+// ── Modal ────────────────────────────────────────────
+function openModal(type) {
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function selType(i) {
+  for(let j=0;j<6;j++) document.getElementById('mt'+j).classList.remove('sel');
+  document.getElementById('mt'+i).classList.add('sel');
+}
+
+// ── Upload Simulation ────────────────────────────────
+function simulateUpload() {
+  closeModal();
+  const pw = document.getElementById('progressWrap');
+  const pf = document.getElementById('progressFill');
+  const pl = document.getElementById('progressLabel');
+  pw.style.display = 'block';
+  pl.textContent = 'Dokument wird hochgeladen…';
+  pf.style.width = '0%';
+  setTimeout(() => {
+    pf.style.width = '40%';
+    pl.textContent = 'KI extrahiert Daten…';
+  }, 400);
+  setTimeout(() => {
+    pf.style.width = '75%';
+    pl.textContent = 'Portfolio wird aktualisiert…';
+  }, 1400);
+  setTimeout(() => {
+    pf.style.width = '100%';
+    pl.textContent = '✓ Analyse abgeschlossen — Gesamtportfolio aktualisiert';
+    pl.style.color = '#2A7A2A';
+    setTimeout(() => {
+      pw.style.display = 'none';
+      pl.style.color = '';
+    }, 3000);
+  }, 2600);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-over');
+  simulateUpload();
+}
+
+// ── Chat ─────────────────────────────────────────────
+function addUserMsg(text) {
+  const c = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'msg user';
+  d.innerHTML = `<div class="msg-av" style="background:var(--red-mid);color:var(--red)">MS</div>
+                 <div class="msg-bubble">${text}</div>`;
+  c.appendChild(d); c.scrollTop = 9999;
+}
+
+function showTyping() {
+  document.getElementById('typingRow').style.display = 'block';
+  document.getElementById('chatMessages').scrollTop = 9999;
+}
+function hideTyping() {
+  document.getElementById('typingRow').style.display = 'none';
+}
+
+function showAIResult(html) {
+  const r = document.getElementById('aiResult');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="msg ai"><div class="msg-av">AI</div><div>${html}</div></div>`;
+  document.getElementById('chatMessages').scrollTop = 9999;
+}
+
+const responses = {
+  invest: `<div class="msg-bubble">Basierend auf Ihrem Gesamtportfolio (UBS + ZKB + PK + Versicherung, Risiko: <strong>ausgewogen</strong>) empfehle ich vier vernetzte Massnahmen:</div>
+    <div class="ai-results" style="margin-top:9px">
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--grey-100)">📈</div>
+        <div class="arc-body"><h4>SMI-ETF aufstocken · CHF 8 000</h4><p>Untergewichtet vs. Zielallokation — günstiger Einstieg</p></div><div class="arc-arrow">›</div></div>
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--red-light)">🔒</div>
+        <div class="arc-body"><h4>Säule 3a max. einzahlen · CHF 7 056</h4><p>Steuerersparnis CHF 2 258 — sofort wirksam</p></div><div class="arc-arrow">›</div></div>
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--grey-100)">🏢</div>
+        <div class="arc-body"><h4>PK-Einkauf · bis CHF 42 000</h4><p>Steuervorteil CHF 13 440 · Vorsorgelücke reduzieren</p></div><div class="arc-arrow">›</div></div>
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--red-light)">🛡️</div>
+        <div class="arc-body"><h4>USD-Position absichern · Forward 3 Mt.</h4><p>CHF 48 200 Währungsrisiko heute erhöht</p></div><div class="arc-arrow">›</div></div>
+    </div>`,
+  pension: `<div class="msg-bubble">Ihre Pensionierungssituation in 18 Jahren (65. Lebensjahr):<br><br>
+    <strong>Erwartetes Einkommen:</strong> AHV CHF 2 450 + PK CHF 3 100 = <strong>CHF 5 550 / Mt.</strong><br>
+    <strong>Ihr Ziel:</strong> CHF 9 500 / Mt.<br>
+    <strong>Lücke:</strong> <span style="color:var(--red)">−CHF 3 950 / Mt.</span><br><br>
+    Mit PK-Einkauf (CHF 42 000), 3a-Maximierung und weiterem Depot-Aufbau kann die Lücke auf CHF 1 200 / Mt. reduziert werden.</div>
+    <div class="ai-results" style="margin-top:9px">
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--grey-100)">📊</div>
+        <div class="arc-body"><h4>Pensionierungssimulation starten</h4><p>Detaillierte Projektion mit allen Quellen</p></div><div class="arc-arrow">›</div></div>
+    </div>`,
+  tax: `<div class="msg-bubble">Basierend auf Ihrem Steuerauszug 2025 (Kanton ZH, Steuerpflicht CHF 180 400, Steuersatz ~32%) sehe ich drei sofortige Optimierungsmöglichkeiten:</div>
+    <div class="ai-results" style="margin-top:9px">
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--red-light)">🧾</div>
+        <div class="arc-body"><h4>3a-Einzahlung · Ersparnis CHF 2 258</h4><p>Maximalbetrag CHF 7 056 noch nicht ausgeschöpft</p></div><div class="arc-arrow">›</div></div>
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--grey-100)">🏢</div>
+        <div class="arc-body"><h4>PK-Einkauf · Ersparnis CHF 13 440</h4><p>CHF 42 000 Einkaufspotenzial vorhanden</p></div><div class="arc-arrow">›</div></div>
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--grey-100)">🏠</div>
+        <div class="arc-body"><h4>Schuldzinsen Hypothek geltend machen</h4><p>CHF 12 480 / Jahr absetzbar</p></div><div class="arc-arrow">›</div></div>
+    </div>`,
+  usd: `<div class="msg-bubble">Ihre USD-Position von CHF 48 200 verliert heute –2.4% (CHF −1 157). Der USD-Index zeigt einen übergeordneten Abwärtstrend seit 3 Monaten.<br><br>
+    <strong>Risikoeinschätzung:</strong> Mittel-hoch bei weiterem USD-Rückgang.<br><br>
+    <strong>Empfohlene Strategien:</strong></div>
+    <div class="ai-results" style="margin-top:9px">
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--red-light)">🛡️</div>
+        <div class="arc-body"><h4>Forward-Kontrakt (3 Mt.) abschliessen</h4><p>Heute-Kurs sichern · Kosten ca. CHF 180</p></div><div class="arc-arrow">›</div></div>
+      <div class="ai-result-card"><div class="arc-icon" style="background:var(--grey-100)">📉</div>
+        <div class="arc-body"><h4>Position teilweise liquidieren</h4><p>50% verkaufen · CHF 24 100 in CHF umtauschen</p></div><div class="arc-arrow">›</div></div>
+    </div>`
+};
+
+function demoChat(el, type) {
+  const text = el.textContent.replace(/^.\s/,'').trim();
+  el.style.opacity = '.4'; el.style.pointerEvents = 'none';
+  addUserMsg(text);
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    showAIResult(responses[type] || responses.invest);
+  }, 1800);
+}
+
+function sendMsg() {
+  const inp = document.getElementById('chatInput');
+  const t = inp.value.trim(); if (!t) return;
+  inp.value = ''; inp.style.height = 'auto';
+  addUserMsg(t);
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    const lower = t.toLowerCase();
+    let type = 'invest';
+    if (lower.includes('pension') || lower.includes('rente') || lower.includes('alter')) type = 'pension';
+    else if (lower.includes('steuer') || lower.includes('tax')) type = 'tax';
+    else if (lower.includes('usd') || lower.includes('dollar') || lower.includes('währung')) type = 'usd';
+    showAIResult(responses[type]);
+  }, 1800);
+}
+
+function triggerInvestChat() {
+  document.getElementById('alertBanner').style.display = 'none';
+  addUserMsg('USD-Risiko: Welche Strategie empfiehlst du?');
+  showTyping();
+  setTimeout(() => { hideTyping(); showAIResult(responses.usd); }, 1800);
+}
+
+// ── Timezone → Header Background Image ────────────────
+(function initHeaderBg() {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+
+  // Kuratierte Unsplash-Bilder nach Timezone-Region
+  const tzMap = [
+    { zones: ['Europe/Zurich','Europe/Bern','Europe/Vienna','Europe/Berlin','Europe/Paris','Europe/Rome'],
+      img: 'photo-1527668752968-14dc70a27c95', // Schweizer Alpen Sommer
+      label: '📍 Schweiz / Alpen' },
+    { zones: ['Europe/London','Europe/Dublin'],
+      img: 'photo-1513635269975-59663e0ac1ad', // London
+      label: '📍 London' },
+    { zones: ['America/New_York','America/Toronto','America/Chicago'],
+      img: 'photo-1496442226666-8d4d0e62e6e9', // New York
+      label: '📍 New York' },
+    { zones: ['America/Sao_Paulo','America/Argentina/Buenos_Aires','America/Santiago'],
+      img: 'photo-1483729558449-99ef09a8c325', // Rio / Südamerika Sommer
+      label: '📍 São Paulo' },
+    { zones: ['Asia/Singapore','Asia/Kuala_Lumpur','Asia/Jakarta'],
+      img: 'photo-1525625293386-3f8f99389edd', // Singapur
+      label: '📍 Singapur' },
+    { zones: ['Asia/Hong_Kong','Asia/Shanghai','Asia/Taipei'],
+      img: 'photo-1474181487882-5abf3f0ba6c2', // Hong Kong
+      label: '📍 Hongkong' },
+    { zones: ['Asia/Tokyo','Asia/Osaka'],
+      img: 'photo-1540959733332-eab4deabeeaf', // Tokyo
+      label: '📍 Tokio' },
+    { zones: ['Asia/Dubai','Asia/Riyadh'],
+      img: 'photo-1512453979798-5ea266f8880c', // Dubai
+      label: '📍 Dubai' },
+  ];
+
+  // Passende Konfiguration suchen
+  let cfg = tzMap.find(c => c.zones.some(z => tz.startsWith(z.split('/')[0]) || tz === z));
+  if (!cfg) cfg = tzMap[0]; // Default: Schweizer Alpen
+
+  // Hintergrundbild setzen
+  const bg = document.getElementById('headerBgImg');
+  const badge = document.getElementById('locationBadge');
+  if (bg) {
+    bg.style.backgroundImage =
+      `url('https://images.unsplash.com/${cfg.img}?w=1600&q=60&fit=crop')`;
+    // Sanft einblenden sobald Bild geladen
+    const img = new Image();
+    img.onload = () => bg.classList.add('loaded');
+    img.src = `https://images.unsplash.com/${cfg.img}?w=1600&q=60&fit=crop`;
+  }
+  if (badge) badge.textContent = cfg.label;
+})();
+
+// ── Vertikale Mind-Map Sidebar ────────────────────────
+let vmmActive = null;
+const vmmIds = ['vd1','vd2','vd3','vd4','vd5'];
+
+function vmmClick(id) {
+  const wasActive = vmmActive === id;
+  // Alle zurücksetzen
+  vmmIds.forEach(d => document.getElementById(d)?.classList.remove('act'));
+  if (!wasActive) {
+    document.getElementById(id)?.classList.add('act');
+    vmmActive = id;
+  } else {
+    vmmActive = null;
+  }
+}
+
+// ── Mind-Map Interaktion (SVG, falls noch vorhanden) ──
+let mmActive = null;
+const mmIds = ['d1','d2','d3','d4','d5'];
+function mmToggle(id) {
+  const wasActive = mmActive === id;
+  mmIds.forEach(d => {
+    document.getElementById('bg-'+d)?.classList.remove('act');
+    document.getElementById('lbl-'+d)?.classList.remove('act');
+    document.getElementById('conn-'+d)?.classList.remove('act');
+    document.getElementById('subs-'+d)?.classList.remove('vis');
+  });
+  if (!wasActive) {
+    document.getElementById('bg-'+id)?.classList.add('act');
+    document.getElementById('lbl-'+id)?.classList.add('act');
+    document.getElementById('conn-'+id)?.classList.add('act');
+    document.getElementById('subs-'+id)?.classList.add('vis');
+    mmActive = id;
+  } else { mmActive = null; }
+}
+
+// Auto-resize textarea
+const ta = document.getElementById('chatInput');
+ta.addEventListener('input', () => {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 110) + 'px';
+});
+</script>
+</body>
+</html>
